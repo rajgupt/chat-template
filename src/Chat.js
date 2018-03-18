@@ -13,7 +13,7 @@ const defaultStyle = {
     height: '300px',
   },
   textInputContainer: {
-    height: '40px',
+    height: '50px',
     width: '100%',
     backgroundColor: '#efefef',
     borderRadius: '5px',
@@ -38,6 +38,7 @@ class Chat extends React.Component {
   }
   addMessage(value) {
     const message = {
+      avatar: 'https://png.icons8.com/office/40/000000/user.png',
       message: value,
       inbound: false,
       backColor: '#dcf8c6',
@@ -45,9 +46,12 @@ class Chat extends React.Component {
     };
     let messages = this.state.messages;
     messages = messages.filter((element) => element.type !== 'typing');
-    messages.push({ type: 'typing', duration: 500, inbound: true });
     messages.push(message);
-    this.setState({ messages });
+    this.setState({ messages },
+      () => {
+        this.props.onEnter(this.state.messages);
+      }
+    );
   }
   keyPress(e) {
     if (e.key === 'Enter' && e.target.value) {
@@ -72,6 +76,7 @@ class Chat extends React.Component {
 Chat.propTypes = {
   turnOffLoop: PropTypes.bool,
   isScrollable: PropTypes.bool,
+  onEnter: PropTypes.func,
   messages: PropTypes.arrayOf(
     PropTypes.shape({
       message: PropTypes.string,
