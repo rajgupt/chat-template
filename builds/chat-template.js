@@ -65,6 +65,7 @@ var showChatTemplate =
 
 	  _reactDom2.default.render(_react2.default.createElement(_index.Conversation, { delay: delay, height: height, messages: messages }), element);
 	};
+
 	module.exports = showChatTemplate;
 
 /***/ }),
@@ -14686,55 +14687,14 @@ var showChatTemplate =
 
 	    var _this = _possibleConstructorReturn(this, (Conversation.__proto__ || Object.getPrototypeOf(Conversation)).call(this, props, context));
 
-	    _this.state = {
-	      startingDelay: props.delay || 1000,
-	      messages: props.historicMessages ? props.historicMessages.slice() : [],
-	      historicMessages: props.historicMessages ? props.historicMessages.slice() : [],
-	      messagesToBeDisplayed: props.messages.slice(),
-	      originalMessagesToBeDisplayed: props.messages.slice(),
-	      isScrollable: props.isScrollable,
-	      isTyping: false,
-	      inbound: true,
-	      reset: false,
-	      turnOffLoop: props.turnOffLoop
-	    };
-	    return _this;
-	  }
-
-	  _createClass(Conversation, [{
-	    key: 'componentDidMount',
-	    value: function componentDidMount() {
-	      this.timeoutId = setTimeout(this.showMessage, this.state.startingDelay);
-	    }
-	  }, {
-	    key: 'componentWillReceiveProps',
-	    value: function componentWillReceiveProps(nextProps) {
-	      var previousMessagesLength = this.state.messagesToBeDisplayed.length + this.state.messages.length - this.state.historicMessages.length;
-
-	      if (nextProps.messages.length > previousMessagesLength) {
-	        clearTimeout(this.timeoutId);
-	        this.setState({
-	          messagesToBeDisplayed: this.state.messagesToBeDisplayed.concat(nextProps.messages.slice(previousMessagesLength))
-	        });
-
-	        this.timeoutId = setTimeout(this.showMessage, this.state.startingDelay);
-	      }
-	    }
-	  }, {
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      clearTimeout(this.timeoutId);
-	    }
-	  }, {
-	    key: 'showMessage',
-	    value: function showMessage() {
-	      var messages = this.state.messages;
-	      var messagesToBeDisplayed = this.state.messagesToBeDisplayed;
-	      var reset = this.state.reset;
-	      if (this.state.messagesToBeDisplayed.length > 0) {
-	        var message = this.state.messagesToBeDisplayed.shift();
-	        var isTyping = this.state.isTyping;
-	        var inbound = this.state.inbound;
+	    _this.showMessage = function () {
+	      var messages = _this.state.messages;
+	      var messagesToBeDisplayed = _this.state.messagesToBeDisplayed;
+	      var reset = _this.state.reset;
+	      if (_this.state.messagesToBeDisplayed.length > 0) {
+	        var message = _this.state.messagesToBeDisplayed.shift();
+	        var isTyping = _this.state.isTyping;
+	        var inbound = _this.state.inbound;
 	        if (message.type === 'typing') {
 	          isTyping = true;
 	          inbound = message.inbound;
@@ -14746,29 +14706,28 @@ var showChatTemplate =
 	        if (message.onDisplay) {
 	          onDisplay = message.onDisplay.bind(null, message.id);
 	        }
-	        this.setState(_extends({}, this.state, {
+	        _this.setState(_extends({}, _this.state, {
 	          messages: messages,
 	          messagesToBeDisplayed: messagesToBeDisplayed,
 	          isTyping: isTyping,
 	          inbound: inbound,
 	          reset: reset
 	        }), onDisplay);
-	        this.timeoutId = setTimeout(this.showMessage, message.duration || 800);
-	      } else if (!this.state.turnOffLoop) {
-	        this.setState(_extends({}, this.state, {
-	          messagesToBeDisplayed: this.state.originalMessagesToBeDisplayed.slice(),
-	          messages: this.state.historicMessages.slice(),
+	        _this.timeoutId = setTimeout(_this.showMessage, message.duration || 800);
+	      } else if (!_this.state.turnOffLoop) {
+	        _this.setState(_extends({}, _this.state, {
+	          messagesToBeDisplayed: _this.state.originalMessagesToBeDisplayed.slice(),
+	          messages: _this.state.historicMessages.slice(),
 	          isTyping: false,
 	          inbound: true,
 	          reset: !reset
 	        }));
-	        this.timeoutId = setTimeout(this.showMessage, this.state.startingDelay);
+	        _this.timeoutId = setTimeout(_this.showMessage, _this.state.startingDelay);
 	      }
-	    }
-	  }, {
-	    key: 'paneDidMount',
-	    value: function paneDidMount(node) {
-	      if (node && this.state.isScrollable) {
+	    };
+
+	    _this.paneDidMount = function (node) {
+	      if (node && _this.state.isScrollable) {
 	        node.addEventListener('wheel', function (event) {
 	          var mouseMoveY = event.deltaY;
 	          var conversationDisplayElement = node;
@@ -14808,6 +14767,46 @@ var showChatTemplate =
 	          }
 	        });
 	      }
+	    };
+
+	    _this.state = {
+	      startingDelay: props.delay || 1000,
+	      messages: props.historicMessages ? props.historicMessages.slice() : [],
+	      historicMessages: props.historicMessages ? props.historicMessages.slice() : [],
+	      messagesToBeDisplayed: props.messages.slice(),
+	      originalMessagesToBeDisplayed: props.messages.slice(),
+	      isScrollable: props.isScrollable,
+	      isTyping: false,
+	      inbound: true,
+	      reset: false,
+	      turnOffLoop: props.turnOffLoop
+	    };
+	    return _this;
+	  }
+
+	  _createClass(Conversation, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      this.timeoutId = setTimeout(this.showMessage, this.state.startingDelay);
+	    }
+	  }, {
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      var previousMessagesLength = this.state.messagesToBeDisplayed.length + this.state.messages.length - this.state.historicMessages.length;
+
+	      if (nextProps.messages.length > previousMessagesLength) {
+	        clearTimeout(this.timeoutId);
+	        this.setState({
+	          messagesToBeDisplayed: this.state.messagesToBeDisplayed.concat(nextProps.messages.slice(previousMessagesLength))
+	        });
+
+	        this.timeoutId = setTimeout(this.showMessage, this.state.startingDelay);
+	      }
+	    }
+	  }, {
+	    key: 'componentWillUnmount',
+	    value: function componentWillUnmount() {
+	      clearTimeout(this.timeoutId);
 	    }
 	  }, {
 	    key: 'render',
